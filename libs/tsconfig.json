@@ -1,0 +1,4 @@
+"paths": {
+  "@common/*": ["libs/common/src/*"],
+  "@events/*": ["libs/events/src/*"]
+}
