@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model company_requirements {
+  id                   Int                @id @default(autoincrement())
+  company_id           Int
+  required_evidence_id Int
+  note                 String?
+  created_at           DateTime           @default(now()) @db.Timestamp(6)
+  updated_at           DateTime           @default(now()) @db.Timestamp(6)
+  required_evidences   required_evidences @relation(fields: [required_evidence_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspectors {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique @db.VarChar(150)
+  created_at  DateTime      @default(now()) @db.Timestamp(6)
+  updated_at  DateTime      @default(now()) @db.Timestamp(6)
+  regulations regulations[]
+}
+
+model issuers {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique @db.VarChar(150)
+  created_at  DateTime      @default(now()) @db.Timestamp(6)
+  updated_at  DateTime      @default(now()) @db.Timestamp(6)
+  regulations regulations[]
+}
+
+model regulation_articles {
+  id                 Int                  @id @default(autoincrement())
+  regulation_id      Int
+  article_number     String               @db.VarChar(50)
+  article_text       String?
+  created_at         DateTime             @default(now()) @db.Timestamp(6)
+  updated_at         DateTime             @default(now()) @db.Timestamp(6)
+  regulations        regulations          @relation(fields: [regulation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  required_evidences required_evidences[]
+}
+
+model regulation_subtopics {
+  id            Int         @id @default(autoincrement())
+  regulation_id Int
+  subtopic_id   Int
+  created_at    DateTime    @default(now()) @db.Timestamp(6)
+  updated_at    DateTime    @default(now()) @db.Timestamp(6)
+  regulations   regulations @relation(fields: [regulation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model regulations {
+  id                   Int                    @id @default(autoincrement())
+  title                String                 @db.VarChar(255)
+  type                 String                 @db.VarChar(50)
+  link                 String?
+  published_date       DateTime?              @db.Date
+  start_date           DateTime?              @db.Date
+  updated_date         DateTime?              @db.Date
+  issuer_id            Int?
+  inspector_id         Int?
+  created_at           DateTime               @default(now()) @db.Timestamp(6)
+  updated_at           DateTime               @default(now()) @db.Timestamp(6)
+  regulation_articles  regulation_articles[]
+  regulation_subtopics regulation_subtopics[]
+  inspectors           inspectors?            @relation(fields: [inspector_id], references: [id], onUpdate: NoAction)
+  issuers              issuers?               @relation(fields: [issuer_id], references: [id], onUpdate: NoAction)
+}
+
+model required_evidences {
+  id                    Int                    @id @default(autoincrement())
+  description           String
+  category              String?                @db.VarChar(100)
+  regulation_article_id Int?
+  created_at            DateTime               @default(now()) @db.Timestamp(6)
+  updated_at            DateTime               @default(now()) @db.Timestamp(6)
+  company_requirements  company_requirements[]
+  regulation_articles   regulation_articles?   @relation(fields: [regulation_article_id], references: [id], onUpdate: NoAction)
+}

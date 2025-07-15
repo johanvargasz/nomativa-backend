@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(255)
+  address            String?              @db.VarChar(255)
+  phone              String?              @db.VarChar(50)
+  createdAt          DateTime             @default(now()) @map("created_at")
+  updatedAt          DateTime             @updatedAt @map("updated_at")
+  companyUserRoles CompanyUserRole[]
+
+  @@map("companies")
+}
+
+model CompanyUserRole {
+  companyId  Int
+  userId     Int
+  roleId     Int
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  company    Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role       Role     @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([companyId, userId])
+  @@map("company_user_roles")
+}
+
+model Role {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique @db.VarChar(50)
+  description        String?              @db.VarChar(255)
+  createdAt          DateTime             @default(now()) @map("created_at")
+  updatedAt          DateTime             @updatedAt @map("updated_at")
+  companyUserRoles CompanyUserRole[]
+
+  @@map("roles")
+}
+
+model User {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(150)
+  email              String               @unique @db.VarChar(150)
+  phone              String?              @db.VarChar(50)
+  userType           String?              @db.VarChar(50)
+  password           String?              @db.VarChar(300)
+  createdAt          DateTime             @default(now()) @map("created_at")
+  updatedAt          DateTime             @updatedAt @map("updated_at")
+  companyUserRoles   CompanyUserRole[]
+
+  @@map("users")
+}

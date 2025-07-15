@@ -1,4 +1,10 @@
-"paths": {
-  "@common/*": ["libs/common/src/*"],
-  "@events/*": ["libs/events/src/*"]
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "paths": {
+      "@common/*": ["libs/common/src/*"],
+      "@config/*": ["libs/config/src/*"],
+      "@events/*": ["libs/events/src/*"]
+    }
+  }
 }

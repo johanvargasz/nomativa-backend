@@ -64,13 +64,13 @@
         "tsConfigPath": "apps/form-service/tsconfig.app.json"
       }
     },
-    "normativas-service": {
+    "normative-service": {
       "type": "application",
-      "root": "apps/normativas-service",
+      "root": "apps/normative-service",
       "entryFile": "main",
-      "sourceRoot": "apps/normativas-service/src",
+      "sourceRoot": "apps/normative-service/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/normativas-service/tsconfig.app.json"
+        "tsConfigPath": "apps/normative-service/tsconfig.app.json"
       }
     },
     "normative-backend": {
