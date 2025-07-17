@@ -9,52 +9,55 @@ datasource db {
 }
 
 model Company {
-  id                 Int                  @id @default(autoincrement())
-  name               String               @db.VarChar(255)
-  address            String?              @db.VarChar(255)
-  phone              String?              @db.VarChar(50)
-  createdAt          DateTime             @default(now()) @map("created_at")
-  updatedAt          DateTime             @updatedAt @map("updated_at")
-  companyUserRoles CompanyUserRole[]
+  id                 Int               @id @default(autoincrement())
+  name               String            @db.VarChar(255)
+  address            String?           @db.VarChar(255)
+  phone              String?           @db.VarChar(50)
+  main_user_id       Int
+  created_at         DateTime          @default(now()) @db.Timestamp(6)
+  updated_at         DateTime          @default(now()) @db.Timestamp(6)
+  users              User              @relation(fields: [main_user_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  company_user_roles CompanyUserRole[]
 
   @@map("companies")
 }
 
 model CompanyUserRole {
-  companyId  Int
-  userId     Int
-  roleId     Int
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @updatedAt @map("updated_at")
-  company    Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  role       Role     @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company_id Int
+  user_id    Int
+  role_id    Int
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+  company    Company  @relation(fields: [company_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  role       Role     @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([companyId, userId])
+  @@id([company_id, user_id])
   @@map("company_user_roles")
 }
 
 model Role {
-  id                 Int                  @id @default(autoincrement())
-  name               String               @unique @db.VarChar(50)
-  description        String?              @db.VarChar(255)
-  createdAt          DateTime             @default(now()) @map("created_at")
-  updatedAt          DateTime             @updatedAt @map("updated_at")
-  companyUserRoles CompanyUserRole[]
+  id                 Int               @id @default(autoincrement())
+  name               String            @unique @db.VarChar(50)
+  description        String?           @db.VarChar(255)
+  created_at         DateTime          @default(now()) @db.Timestamp(6)
+  updated_at         DateTime          @default(now()) @db.Timestamp(6)
+  company_user_roles CompanyUserRole[]
 
   @@map("roles")
 }
 
 model User {
-  id                 Int                  @id @default(autoincrement())
-  name               String               @db.VarChar(150)
-  email              String               @unique @db.VarChar(150)
-  phone              String?              @db.VarChar(50)
-  userType           String?              @db.VarChar(50)
-  password           String?              @db.VarChar(300)
-  createdAt          DateTime             @default(now()) @map("created_at")
-  updatedAt          DateTime             @updatedAt @map("updated_at")
-  companyUserRoles   CompanyUserRole[]
+  id                 Int               @id @default(autoincrement())
+  name               String            @db.VarChar(150)
+  email              String            @unique @db.VarChar(150)
+  phone              String?           @db.VarChar(50)
+  user_type          String?           @db.VarChar(50)
+  password           String?           @map("password_hash") @db.VarChar(300)
+  created_at         DateTime          @default(now()) @db.Timestamp(6)
+  updated_at         DateTime          @default(now()) @db.Timestamp(6)
+  companies          Company[]
+  company_user_roles CompanyUserRole[]
 
   @@map("users")
 }
